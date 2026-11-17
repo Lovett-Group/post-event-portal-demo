@@ -15,6 +15,10 @@ Use a Notion `/embed` block with one of these links:
 | `…/?role=marketing` | Marketing calendar only |
 | `…/?role=client` | Client asset upload only |
 
+## Client portal (separate page)
+
+`https://lovett-group.github.io/post-event-portal-demo/client.html` is the stand-alone page a client sees from the private link in our email. It shows only their event: confirm details, upload a photo, short description, and optional extras. Uploads are limited to JPG, PNG, WebP (20 MB) and MP4, MOV (200 MB); everything else is refused. In the real version, Brandon's program must repeat these checks on the server and save the files to the event in Notion.
+
 ## Editing
 
 Everything is in `index.html`.

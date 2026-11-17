@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Event Asset Upload</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+:root {
+  --bg: #f4f6f8; --surface: #ffffff; --sunken: #eceff3;
+  --ink: #15202b; --muted: #55616f; --line: #d5dbe3;
+  --accent: #0d6860; --accent-ink: #ffffff;
+  --info-bg: #dcebfb; --info-fg: #0b4a86;
+  --ok-bg: #d9f2e1; --ok-fg: #17603a;
+  --warn-bg: #fde3dc; --warn-fg: #b3361a;
+  --display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f141a; --surface: #171e26; --sunken: #121820;
+  --ink: #e6ebf1; --muted: #a3afbc; --line: #2c3743;
+  --accent: #55c7b9; --accent-ink: #06211e;
+  --info-bg: #0f2c4a; --info-fg: #9cc9f5;
+  --ok-bg: #123322; --ok-fg: #8fdcae;
+  --warn-bg: #45190f; --warn-fg: #ff9c85;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f141a; --surface: #171e26; --sunken: #121820;
+  --ink: #e6ebf1; --muted: #a3afbc; --line: #2c3743;
+  --accent: #55c7b9; --accent-ink: #06211e;
+  --info-bg: #0f2c4a; --info-fg: #9cc9f5;
+  --ok-bg: #123322; --ok-fg: #8fdcae;
+  --warn-bg: #45190f; --warn-fg: #ff9c85;
+  color-scheme: dark }
+
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; margin: 0 }
+.wrap { max-width: 640px; margin: 0 auto; padding-block: 24px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 14px }
+h1, h2 { font-family: var(--display); font-weight: 600; margin: 0; text-wrap: balance }
+h1 { font-size: 26px; line-height: 1.2 } h2 { font-size: 17px }
+p { margin: 0 }
+.muted { color: var(--muted) }
+.small { font-size: 13px }
+.label { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600 }
+.link { font: inherit; border: 0; background: none; color: var(--accent); cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 2px }
+
+.demo { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; justify-content: space-between; font-size: 13px; color: var(--muted); background: var(--sunken); border: 1px dashed var(--line); border-radius: 10px; padding: 8px 12px }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 20px }
+.head { display: flex; flex-direction: column; gap: 6px }
+.facts { color: var(--muted); font-variant-numeric: tabular-nums }
+.due { font-weight: 600 }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
+.steps li { border-radius: 8px; padding: 6px 10px; background: var(--sunken); color: var(--muted); font-weight: 600; font-size: 13px; text-align: center }
+.steps li.on { background: var(--accent); color: var(--accent-ink) }
+.steps li.past { background: var(--ok-bg); color: var(--ok-fg) }
+
+section { display: flex; flex-direction: column; gap: 12px }
+section + section { border-top: 1px solid var(--line); padding-top: 20px }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0 }
+.field > .name { font-weight: 600 }
+.opt { color: var(--muted); font-weight: 400; font-size: 13px }
+.hint { font-size: 13px; color: var(--muted) }
+.err { color: var(--warn-fg); font-size: 13px }
+input[type="text"], input[type="url"], textarea {
+  font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%; min-width: 0 }
+textarea { min-height: 84px; resize: vertical }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px }
+
+.tog { display: inline-flex; flex-wrap: wrap; gap: 8px }
+.tog button { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 16px; cursor: pointer }
+.tog button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600 }
+.tog button[aria-pressed="true"]::before { content: "✓ " }
+
+.drop { position: relative; border: 2px dashed var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; background: var(--sunken); cursor: pointer }
+.drop:hover, .drop.over { border-color: var(--accent) }
+.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100% }
+.drop b { color: var(--accent) }
+.thumb { display: flex; gap: 12px; align-items: center; background: var(--sunken); border-radius: 10px; padding: 8px }
+.thumb img { width: 120px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; background: var(--line) }
+.thumb div { min-width: 0; display: flex; flex-direction: column; gap: 2px; flex: 1 }
+.thumb b { overflow-wrap: anywhere; font-weight: 600 }
+.files { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px }
+.files li { display: flex; gap: 8px; align-items: center; justify-content: space-between; background: var(--sunken); border-radius: 8px; padding: 6px 10px; font-size: 14px }
+.files li span { overflow-wrap: anywhere; min-width: 0 }
+.x { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 2px 10px; cursor: pointer; flex: none }
+
+details > summary { cursor: pointer; font-weight: 600 }
+details[open] > summary { margin-bottom: 12px }
+.box { border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px }
+.box.ok { background: var(--ok-bg); color: var(--ok-fg) }
+.box.info { background: var(--info-bg); color: var(--info-fg) }
+.acts { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+.btn { font: inherit; font-weight: 600; border-radius: 10px; padding: 10px 20px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink) }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink) }
+dl.sum { margin: 0; display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 6px 12px; font-size: 14px }
+dl.sum dt { color: var(--muted) }
+dl.sum dd { margin: 0; overflow-wrap: anywhere }
+footer { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; padding: 0 4px }
+
+@media (max-width: 560px) {
+  .card { padding: 16px; gap: 16px }
+  h1 { font-size: 22px }
+  .grid2 { grid-template-columns: minmax(0, 1fr) }
+  dl.sum { grid-template-columns: minmax(0, 1fr); gap: 0 }
+  dl.sum dd { margin-bottom: 8px }
+  .thumb img { width: 88px }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="demo"><span>Demo: made-up event. Nothing is uploaded or sent.</span><button type="button" class="link" id="reset">Start over</button></div>
+  <div class="card" id="card"></div>
+  <footer>
+    <span>This link is only for your event. Please don't share it.</span>
+    <span>Questions? Reply to the email this link came in.</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  // ---------- demo event (dates placed relative to today) ----------
+  var DAY = 864e5, ASSETS_DUE = 28, SHORT_MAX = 300, MIN_W = 1200;
+  var today = new Date(); today.setHours(12, 0, 0, 0);
+  var EVENT = {
+    name: "Lunar New Year Night Market",
+    date: new Date(today.getTime() + 35 * DAY),
+    time: "6:00 – 10:00 PM",
+    place: "Barbara Jordan Plaza, POST Houston"
+  };
+  var SEND_BY = new Date(EVENT.date.getTime() - ASSETS_DUE * DAY);
+
+  // Safe file types only. Anything else (exe, zip, svg, html, docs…) is refused.
+  var PHOTO_TYPES = { "image/jpeg": "JPG", "image/png": "PNG", "image/webp": "WebP" };
+  var EXTRA_TYPES = { "image/jpeg": "JPG", "image/png": "PNG", "image/webp": "WebP", "video/mp4": "MP4", "video/quicktime": "MOV" };
+  var EXT_OK = { jpg: 1, jpeg: 1, png: 1, webp: 1, mp4: 1, mov: 1 };
+  var MB = 1024 * 1024, PHOTO_MAX = 20 * MB, IMG_MAX = 20 * MB, VIDEO_MAX = 200 * MB, EXTRA_COUNT = 10;
+
+  var KEY = "post-client-portal-demo";
+  function blank() { return { confirm: "", wrong: "", flagged: false, photo: null, short: "", long: "", ticket: "", social: "", extras: [], sent: false, sentAt: 0 }; }
+  var s = blank();
+  try { var saved = JSON.parse(localStorage.getItem(KEY)); if (saved && typeof saved === "object") s = Object.assign(blank(), saved); } catch (e) {}
+  var photoUrl = ""; // preview only lives for this visit
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+
+  function $(id) { return document.getElementById(id); }
+  function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function fmtDate(d) { return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }); }
+  function fmtSize(b) { return b >= MB ? (b / MB).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB"; }
+  function ext(name) { var m = /\.([a-z0-9]+)$/i.exec(name || ""); return m ? m[1].toLowerCase() : ""; }
+  function urlOk(u) { return /^https?:\/\/[^\s.]+\.[^\s]+$/i.test(u.trim()); }
+
+  function missing() {
+    var m = [];
+    if (s.confirm !== "Yes") m.push("confirm the date, time and place");
+    if (!s.photo) m.push("a photo");
+    if (!s.short.trim()) m.push("a short description"); else if (s.short.length > SHORT_MAX) m.push("a shorter description");
+    if (s.ticket.trim() && !urlOk(s.ticket)) m.push("a valid ticket or RSVP link");
+    return m;
+  }
+
+  // ---------- render ----------
+  function steps(stage) {
+    return '<ol class="steps" aria-label="Progress">' + ["Requested", "Received", "Live"].map(function (t, i) {
+      return '<li class="' + (i < stage ? "past" : i === stage ? "on" : "") + '"' + (i === stage ? ' aria-current="step"' : "") + '>' + t + '</li>';
+    }).join("") + '</ol>';
+  }
+  function head() {
+    return '<div class="head"><span class="label">POST Houston</span><h1>Help us promote ' + esc(EVENT.name) + '</h1>' +
+      '<p class="facts">' + fmtDate(EVENT.date) + ' · ' + esc(EVENT.time) + ' · ' + esc(EVENT.place) + '</p>' +
+      (!s.sent && !s.flagged ? '<p class="due">Please send by ' + fmtDate(SEND_BY) + '</p>' : '') + '</div>';
+  }
+
+  function render() {
+    var html = head() + steps(s.sent ? 1 : 0);
+    if (s.flagged) {
+      html += '<div class="box info"><b>Thanks for telling us.</b><span>We are fixing: ' + esc(s.wrong) + '. We will email you when it is updated, and you can come back to this link to finish.</span></div>' +
+        '<div class="acts"><button type="button" class="link" data-act="unflag">Back to the form</button></div>';
+    } else if (s.sent) {
+      html += '<div class="box ok"><b>✓ Thanks, we have everything.</b><span>We will email you when your event is live on posthtx.com.</span></div>' + summary();
+    } else {
+      html += form();
+    }
+    $("card").innerHTML = html;
+    refresh();
+  }
+
+  function form() {
+    return '<section aria-labelledby="h-check"><h2 id="h-check">1. Check your event</h2>' +
+        '<div class="field"><span class="name">Are the date, time and place right?</span>' +
+          '<div class="tog" role="group" aria-label="Are the details right?"><button type="button" data-confirm="Yes" aria-pressed="' + (s.confirm === "Yes") + '">Yes</button><button type="button" data-confirm="No" aria-pressed="' + (s.confirm === "No") + '">Something is wrong</button></div></div>' +
+        '<div class="field" id="row-wrong"' + (s.confirm === "No" ? "" : " hidden") + '><label class="name" for="f-wrong">What is wrong?</label>' +
+          '<input type="text" id="f-wrong" data-f="wrong" value="' + esc(s.wrong) + '" placeholder="For example: it starts at 7 PM, not 6 PM" autocomplete="off">' +
+          '<div class="acts"><button type="button" class="btn" data-act="flag">Tell us</button><span class="err" id="e-wrong" hidden>Tell us what is wrong first.</span></div></div>' +
+      '</section>' +
+
+      '<section aria-labelledby="h-photo"><h2 id="h-photo">2. Photo and description</h2>' +
+        '<div class="field"><span class="name">Main photo</span>' +
+          '<div id="photo-box"></div>' +
+          '<span class="err" id="e-photo" role="alert" hidden></span></div>' +
+        '<div class="field"><label class="name" for="f-short">Short description <span class="opt" id="count"></span></label>' +
+          '<textarea id="f-short" data-f="short" placeholder="What it is and who it is for, in one or two sentences">' + esc(s.short) + '</textarea></div>' +
+      '</section>' +
+
+      '<section><details' + (s.long || s.ticket || s.social || s.extras.length ? " open" : "") + '><summary>3. More details <span class="opt">optional</span></summary>' +
+        '<div style="display:flex;flex-direction:column;gap:14px">' +
+          '<div class="field"><label class="name" for="f-long">Longer description</label><textarea id="f-long" data-f="long">' + esc(s.long) + '</textarea></div>' +
+          '<div class="grid2"><div class="field"><label class="name" for="f-ticket">Ticket or RSVP link</label><input type="url" id="f-ticket" data-f="ticket" value="' + esc(s.ticket) + '" placeholder="https://" autocomplete="off"><span class="err" id="e-ticket" hidden>Start the link with https://</span></div>' +
+          '<div class="field"><label class="name" for="f-social">Social handles</label><input type="text" id="f-social" data-f="social" value="' + esc(s.social) + '" placeholder="@yourhandle" autocomplete="off"></div></div>' +
+          '<div class="field"><span class="name">Logos, more photos, short videos</span>' +
+            '<label class="drop" id="drop-extra"><input type="file" id="f-extra" multiple accept="' + Object.keys(EXTRA_TYPES).join(",") + ',.jpg,.jpeg,.png,.webp,.mp4,.mov" aria-label="Add more files">' +
+              '<span><b>Choose files</b> or drag them here</span><span class="hint">JPG, PNG, WebP up to 20 MB · MP4, MOV up to 200 MB · up to ' + EXTRA_COUNT + ' files</span></label>' +
+            '<ul class="files" id="extra-list"></ul><span class="err" id="e-extra" role="alert" hidden></span></div>' +
+        '</div></details></section>' +
+
+      '<div class="acts"><button type="button" class="btn primary" data-act="send">Send to POST</button><span class="err" id="e-send" role="alert" hidden></span></div>';
+  }
+
+  function photoBox() {
+    if (!s.photo) return '<label class="drop" id="drop-photo"><input type="file" id="f-photo" accept="' + Object.keys(PHOTO_TYPES).join(",") + ',.jpg,.jpeg,.png,.webp" aria-label="Choose a photo">' +
+      '<span><b>Choose a photo</b> or drag it here</span><span class="hint">Landscape (wider than tall), at least ' + MIN_W + 'px wide. JPG, PNG or WebP, up to 20 MB. Please no text-heavy flyers.</span></label>';
+    return '<div class="thumb">' + (photoUrl ? '<img src="' + photoUrl + '" alt="Your photo">' : '') +
+      '<div><b>✓ ' + esc(s.photo.name) + '</b><span class="hint">' + s.photo.w + ' × ' + s.photo.h + ' px · ' + fmtSize(s.photo.size) + '</span></div>' +
+      '<button type="button" class="x" data-act="photo-remove">Replace</button></div>';
+  }
+
+  function refresh() {
+    if ($("photo-box")) $("photo-box").innerHTML = photoBox();
+    if ($("count")) { var k = s.short.length; $("count").textContent = k + "/" + SHORT_MAX; $("count").className = k > SHORT_MAX ? "err" : "opt"; }
+    if ($("extra-list")) $("extra-list").innerHTML = s.extras.map(function (f, i) {
+      return '<li><span>' + esc(f.name) + ' <span class="hint">· ' + fmtSize(f.size) + '</span></span><button type="button" class="x" data-act="extra-remove" data-i="' + i + '" aria-label="Remove ' + esc(f.name) + '">Remove</button></li>';
+    }).join("");
+    if ($("e-ticket")) $("e-ticket").hidden = !(s.ticket.trim() && !urlOk(s.ticket));
+  }
+
+  function summary() {
+    var rows = [["Photo", s.photo ? s.photo.name : ""], ["Short description", s.short], ["Longer description", s.long], ["Ticket or RSVP link", s.ticket], ["Social handles", s.social],
+      ["More files", s.extras.map(function (f) { return f.name; }).join(", ")]].filter(function (r) { return r[1]; });
+    return '<dl class="sum">' + rows.map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join("") + '</dl>' +
+      '<p class="small muted">Need to change something? Reply to the email and tell us.</p>';
+  }
+
+  function showErr(id, text) { var el = $(id); if (!el) return; el.textContent = text || ""; el.hidden = !text; }
+
+  // ---------- files ----------
+  function typeOk(file, table) { return !!table[file.type] && !!EXT_OK[ext(file.name)]; }
+  function onPhoto(file) {
+    showErr("e-photo", "");
+    if (!file) return;
+    if (!typeOk(file, PHOTO_TYPES)) return showErr("e-photo", "We can't accept " + (ext(file.name) ? "." + ext(file.name) : "this") + " files here. Please use a JPG, PNG or WebP photo.");
+    if (file.size > PHOTO_MAX) return showErr("e-photo", "That photo is " + fmtSize(file.size) + ". Please use one under 20 MB.");
+    var url = URL.createObjectURL(file), img = new Image();
+    img.onload = function () {
+      var w = img.naturalWidth, h = img.naturalHeight;
+      if (w < MIN_W) { URL.revokeObjectURL(url); return showErr("e-photo", "That photo is " + w + "px wide. Please use one at least " + MIN_W + "px wide."); }
+      if (h >= w) { URL.revokeObjectURL(url); return showErr("e-photo", "Please use a landscape photo (wider than it is tall)."); }
+      if (photoUrl) URL.revokeObjectURL(photoUrl);
+      photoUrl = url; s.photo = { name: file.name, w: w, h: h, size: file.size }; save(); refresh();
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); showErr("e-photo", "We couldn't open that file as a photo. Please try another one."); };
+    img.src = url;
+  }
+  function onExtras(list) {
+    var refused = [];
+    [].forEach.call(list || [], function (f) {
+      var isVideo = /^video\//.test(f.type);
+      if (!typeOk(f, EXTRA_TYPES)) refused.push(f.name + " (file type not accepted)");
+      else if (f.size > (isVideo ? VIDEO_MAX : IMG_MAX)) refused.push(f.name + " (too large)");
+      else if (s.extras.length >= EXTRA_COUNT) refused.push(f.name + " (limit is " + EXTRA_COUNT + " files)");
+      else s.extras.push({ name: f.name, size: f.size });
+    });
+    save(); refresh();
+    showErr("e-extra", refused.length ? "Not added: " + refused.join(", ") + ". We accept JPG, PNG, WebP, MP4 and MOV only." : "");
+  }
+
+  // ---------- events ----------
+  var card = $("card");
+  card.addEventListener("input", function (e) {
+    var f = e.target.dataset && e.target.dataset.f; if (!f) return;
+    s[f] = e.target.value; save(); refresh();
+  });
+  card.addEventListener("change", function (e) {
+    if (e.target.id === "f-photo") { onPhoto(e.target.files && e.target.files[0]); e.target.value = ""; }
+    if (e.target.id === "f-extra") { onExtras(e.target.files); e.target.value = ""; }
+  });
+  ["dragover", "dragleave", "drop"].forEach(function (type) {
+    card.addEventListener(type, function (e) {
+      var zone = e.target.closest && e.target.closest(".drop"); if (!zone) return;
+      e.preventDefault();
+      zone.classList.toggle("over", type === "dragover");
+      if (type === "drop" && e.dataTransfer) { if (zone.id === "drop-photo") onPhoto(e.dataTransfer.files[0]); else onExtras(e.dataTransfer.files); }
+    });
+  });
+  card.addEventListener("click", function (e) {
+    var c = e.target.closest("button[data-confirm]");
+    if (c) { s.confirm = c.dataset.confirm; save(); render(); if (s.confirm === "No" && $("f-wrong")) $("f-wrong").focus(); return; }
+    var b = e.target.closest("button[data-act]"); if (!b) return;
+    var a = b.dataset.act;
+    if (a === "flag") { if (!s.wrong.trim()) return showErr("e-wrong", "Tell us what is wrong first."); s.flagged = true; save(); render(); }
+    else if (a === "unflag") { s.flagged = false; s.confirm = ""; s.wrong = ""; save(); render(); }
+    else if (a === "photo-remove") { if (photoUrl) URL.revokeObjectURL(photoUrl); photoUrl = ""; s.photo = null; save(); refresh(); }
+    else if (a === "extra-remove") { s.extras.splice(Number(b.dataset.i), 1); save(); refresh(); showErr("e-extra", ""); }
+    else if (a === "send") {
+      var m = missing();
+      if (m.length) return showErr("e-send", "Still needed: " + m.join(", ") + ".");
+      s.sent = true; s.sentAt = Date.now(); save(); render(); window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+  $("reset").addEventListener("click", function () { if (photoUrl) URL.revokeObjectURL(photoUrl); photoUrl = ""; s = blank(); save(); render(); });
+
+  render();
+})();
+</script>
+</body>
+</html>
